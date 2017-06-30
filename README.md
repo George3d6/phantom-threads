@@ -14,25 +14,25 @@ Required Node v6+ and running with the --harmony flag
 The file ```main.js``` contains:
 
 ```javascript
-    const createPhantomPool = require('phantom-threads')
+const createPhantomPool = require('phantom-threads')
 
-    const pool = createPhantomPool();
-    pool.use(async(instance) => {
-        const page = await instance.createPage();
-        const status = await page.open('https://google.com');
-        console.log('Status of the page request was: ' + status);
-        const content = await page.property('content');
-        //We no longer need the phantom instance here, so lets just return the content and do with it what we please
-        return content
-    }).then((content) => {
-        console.log("The content of the page has: " + content.length + " characters");
-    }).catch((err) => {
-        console.log("There was an error: " + err);
-    })
-    //Destroy the pool
-    pool.drain().then(() => {
-        pool.clear();
-    });
+const pool = createPhantomPool();
+pool.use(async(instance) => {
+    const page = await instance.createPage();
+    const status = await page.open('https://google.com');
+    console.log('Status of the page request was: ' + status);
+    const content = await page.property('content');
+    //We no longer need the phantom instance here, so lets just return the content and do with it what we please
+    return content
+}).then((content) => {
+    console.log("The content of the page has: " + content.length + " characters");
+}).catch((err) => {
+    console.log("There was an error: " + err);
+})
+//Destroy the pool
+pool.drain().then(() => {
+    pool.clear();
+});
 ```
 ```bash
 node --harmony main.js
@@ -41,41 +41,41 @@ node --harmony main.js
 A more complex example where configurations are passed to the pool:
 
 ```javascript
-    const createPhantomPool = require('phantom-threads');
+const createPhantomPool = require('phantom-threads');
 
-    const pool = createPhantomPool({
-        max: 4, min: 1, idleTimeoutMillis: 3000,
-        //Arguments for the underlying phantom instances
-        phantomArgs: [
-            ['--ignore-ssl-errors=yes', '--load-images=no']
-        ],
-        //After this many uses the instance will be reset
-        maxUsesPerInstance: 100
-    });
-    const mine_website_char_length = async(pool, url) => {
-        return new Promise((resolve, reject) => {
-            pool.use(async(instance) => {
-                const page = await instance.createPage();
-                const status = await page.open(url);
-                console.log('Status of the page request was: ' + status);
-                const content = await page.property('content');
-                return content
-            }).then((content) => {
-                console.log("The content of the page: " + url + " ,has: " + content.length + " characters");
-            }).catch((err) => {
-                console.log("There was an error: " + err);
-                reject(err);
-            });
-            resolve("finished");
+const pool = createPhantomPool({
+    max: 4, min: 1, idleTimeoutMillis: 3000,
+    //Arguments for the underlying phantom instances
+    phantomArgs: [
+        ['--ignore-ssl-errors=yes', '--load-images=no']
+    ],
+    //After this many uses the instance will be reset
+    maxUsesPerInstance: 100
+});
+const mine_website_char_length = async(pool, url) => {
+    return new Promise((resolve, reject) => {
+        pool.use(async(instance) => {
+            const page = await instance.createPage();
+            const status = await page.open(url);
+            console.log('Status of the page request was: ' + status);
+            const content = await page.property('content');
+            return content
+        }).then((content) => {
+            console.log("The content of the page: " + url + " ,has: " + content.length + " characters");
+        }).catch((err) => {
+            console.log("There was an error: " + err);
+            reject(err);
         });
-    };
-    ["https://google.com", "https://wikipedia.org", "https://github.com"].forEach(async(url) => {
-        const result = await mine_website_char_length(pool, url).catch(console.log);
+        resolve("finished");
     });
-    //Destroy the pool
-    pool.drain().then(() => {
-        pool.clear()
-    });
+};
+["https://google.com", "https://wikipedia.org", "https://github.com"].forEach(async(url) => {
+    const result = await mine_website_char_length(pool, url).catch(console.log);
+});
+//Destroy the pool
+pool.drain().then(() => {
+    pool.clear()
+});
 ```
 ## Contributing
 
