@@ -1,0 +1,24 @@
+{
+  "name": "phantom-threads",
+  "version": "0.2.0",
+  "description": "A thread pool for the phantomjs node library",
+  "main": "index.js",
+  "scripts": {
+    "test": "node --harmony test.js"
+  },
+  "keywords": [
+    "phantomjs",
+    "phantom",
+    "pool",
+    "thread-pool",
+    "thread",
+    "phantom-pool",
+    "phantom-threads"
+  ],
+  "author": "George Hosu",
+  "license": "MIT",
+  "dependencies": {
+    "generic-pool": "^3.1.7",
+    "phantom": "^4.0.4"
+  }
+}
